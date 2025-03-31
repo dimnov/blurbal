@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   illustrationImage: {
+    alignSelf: "center",
     width: width * 0.75,
     height: width * 0.75,
   },
