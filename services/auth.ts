@@ -14,13 +14,18 @@ export const signUp = async (username: string, email: string, password: string) 
       },
     });
 
-    if (error) return Alert.alert(error.message);
+    if (error) {
+      Alert.alert(error.message);
+      return { data: null, error };
+    }
 
     const userId = data.user?.id;
+    if (userId) await createUser(userId, username);
 
-    if (userId) createUser(userId, username);
+    return { data, error: null }; // Ensure error is explicitly null when successful
   } catch (error: any) {
-    if (error) Alert.alert(error.message);
+    Alert.alert(error.message);
+    return { data: null, error }; // Ensure return type consistency
   }
 };
 
@@ -31,29 +36,37 @@ export const signIn = async (email: string, password: string) => {
       password,
     });
 
-    if (error) return Alert.alert(error.message);
+    if (error) {
+      Alert.alert(error.message);
+      return { data: null, error };
+    }
+
+    return { data, error: null };
   } catch (error: any) {
     Alert.alert("Login Error", error.message);
+    return { data: null, error };
   }
 };
 
-// export const getUserProfile = async () => {
-//   const {
-//     data: { user },
-//   } = await supabase.auth.getUser();
-
-//   if (user) {
-//     console.log("User Display Name:", user.user_metadata.display_name);
-//   }
-// };
-
 export const createUser = async (userId: string, username: string) => {
-  const profileImage = `${AVATAR_URL}${username}`;
-  const { error } = await supabase.from("profiles").insert({ userId, username, profileImage });
+  try {
+    const profileImage = `${AVATAR_URL}${username}`;
+    const { error } = await supabase.from("profiles").insert({ userId, username, profileImage });
 
-  if (error) {
-    console.error("Error inserting profile:", error.message);
-  } else {
-    console.log("Profile created successfully");
+    if (error) return Alert.alert(error.message);
+  } catch (err) {
+    Alert.alert("An unexpected error occurred.");
+    console.error("signOut error:", err);
+  }
+};
+
+export const signOut = async () => {
+  try {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) return Alert.alert(error.message);
+  } catch (err) {
+    Alert.alert("An unexpected error occurred.");
+    console.error("signOut error:", err);
   }
 };
