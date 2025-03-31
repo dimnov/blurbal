@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { Alert } from "react-native";
-import { AVATAR_URL } from "@/constants/avatarUrl";
+import { AVATAR_URL } from "@/constants/constants";
 
 export const signUp = async (username: string, email: string, password: string) => {
   try {
