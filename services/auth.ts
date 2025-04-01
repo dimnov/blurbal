@@ -51,7 +51,9 @@ export const signIn = async (email: string, password: string) => {
 export const createUser = async (userId: string, username: string) => {
   try {
     const profileImage = `${AVATAR_URL}${username}`;
-    const { error } = await supabase.from("profiles").insert({ userId, username, profileImage });
+    const { error } = await supabase
+      .from("profiles")
+      .insert({ id: userId, username, profileImage });
 
     if (error) return Alert.alert(error.message);
   } catch (err) {
