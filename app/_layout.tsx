@@ -1,5 +1,5 @@
 import SafeScreen from "@/components/SafeScreen";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/auth/useAuth";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
@@ -16,7 +16,7 @@ export default function RootLayout() {
 
     if (!isAuthScreen && !isSignedIn) router.replace("/(auth)");
     else if (isAuthScreen && isSignedIn) router.replace("/(tabs)");
-  }, [session, session?.user]);
+  }, [router, segments, session, session?.user]);
 
   return (
     <SafeAreaProvider>
