@@ -1,7 +1,6 @@
 import COLORS from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import { StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 function TabLayout() {
@@ -58,5 +57,3 @@ function TabLayout() {
 }
 
 export default TabLayout;
-
-const styles = StyleSheet.create({});
