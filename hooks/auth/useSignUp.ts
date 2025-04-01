@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Alert } from "react-native";
-import { signUp } from "../services/auth";
+import { signUp } from "../../services/auth";
 
 export const useSignUp = () => {
   const [isLoading, setIsLoading] = useState(false);

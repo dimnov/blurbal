@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Alert } from "react-native";
-import { signOut } from "../services/auth";
+import { signOut } from "../../services/auth";
 
 export const useSignOut = () => {
   const [isLoading, setIsLoading] = useState(false);
