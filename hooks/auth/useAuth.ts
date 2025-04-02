@@ -1,25 +1,49 @@
-import { supabase } from "@/lib/supabase";
-import { Session } from "@supabase/supabase-js";
-import { useEffect, useState } from "react";
+import { signUpApi, signInApi, signOutApi } from "@/services/auth";
+import { useState } from "react";
+import { Alert } from "react-native";
 
 export const useAuth = () => {
-  const [session, setSession] = useState<Session | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
+  const signUp = async (username: string, email: string, password: string) => {
+    setIsLoading(true);
+    setError(null);
 
-    // Listen for auth state changes
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
+    try {
+      await signUpApi(username, email, password);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An unknown error occurred in signUp");
+      Alert.alert("Error", error || "Invalid email");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, []);
+  const signIn = async (email: string, password: string) => {
+    setIsLoading(true);
+    setError(null);
 
-  return session;
+    try {
+      await signInApi(email, password);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An unknown error occurred in signIn");
+      Alert.alert("Error", error || "Invalid login credentials");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const signOut = async () => {
+    try {
+      await signOutApi();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An unknown error occurred in signOut");
+      Alert.alert("Error", error || "Logout was unsuccessful");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return { signUp, signIn, signOut, isLoading, error };
 };
