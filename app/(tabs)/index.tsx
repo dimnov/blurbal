@@ -6,12 +6,8 @@ import { useEffect, useState } from "react";
 import { ItemData } from "@/types";
 import { Ionicons } from "@expo/vector-icons";
 import COLORS from "@/constants/colors";
-import { formatPublishDate } from "@/lib/utils";
+import { formatPublishDate, sleep } from "@/lib/utils";
 import Loader from "@/components/Loader";
-
-const sleep = (time: number): Promise<void> => {
-  return new Promise((resolve) => setTimeout(resolve, time));
-};
 
 function Home() {
   // also {error}

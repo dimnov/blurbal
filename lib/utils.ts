@@ -14,3 +14,7 @@ export function formatPublishDate(dateString: Date) {
 
   return `${month} ${day}, ${year}`;
 }
+
+export const sleep = (time: number): Promise<void> => {
+  return new Promise((resolve) => setTimeout(resolve, time));
+};

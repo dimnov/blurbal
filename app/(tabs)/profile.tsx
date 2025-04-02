@@ -6,9 +6,9 @@ import ProfileHeader from "@/components/ProfileHeader";
 import LogoutButton from "@/components/LogoutButton";
 import { useDeleteBook } from "@/hooks/books/useDeleteBook";
 import UserBoxList from "@/components/UserBoxList";
-import { sleep } from ".";
 import Loader from "@/components/Loader";
 import { useSession } from "@/hooks/auth/useSession";
+import { sleep } from "@/lib/utils";
 
 function Profile() {
   const { books, handleGetUserBooks, isLoading } = useGetUserBooks();
