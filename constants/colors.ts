@@ -3,6 +3,7 @@ const COLORS = {
   primary: "#4CAF50",
   textPrimary: "#2e5a2e",
   textSecondary: "#688f68",
+  textFavorite: "rgba(104, 143, 104, 0.6)",
   textDark: "#1b361b",
   placeholderText: "#767676",
   background: "#e8f5e9",
