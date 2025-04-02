@@ -18,8 +18,8 @@ import COLORS from "@/constants/colors";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { useUploadBook } from "@/hooks/books/useUploadBook";
-import { useAuth } from "@/hooks/auth/useAuth";
 import { RatingPickerProps } from "@/types";
+import { useSession } from "@/hooks/auth/useSession";
 
 function Create() {
   const [title, setTitle] = useState("");
@@ -29,7 +29,7 @@ function Create() {
   const [imageBase64, setImageBase64] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const session = useAuth();
+  const { session } = useSession();
   const userId = session?.user.id;
 
   // also {isLoading, error}

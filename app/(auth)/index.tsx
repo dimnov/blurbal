@@ -14,18 +14,26 @@ import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import COLORS from "@/constants/colors";
 import { Link } from "expo-router";
-import { signIn } from "@/services/auth";
+import { useAuthContext } from "@/context/AuthContext";
+import { useAuth } from "@/hooks/auth/useAuth";
 
 function Login() {
+  const { signIn, isLoading } = useAuth();
+  const { isCheckingAuth } = useAuthContext();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
-  // todo
-  const handleLogin = () => {};
-  const handleLogin = () => {
+  const handleLogin = async () => {
+    if (!email || !password) {
+      return Alert.alert("Error", "All fields are required.");
+    }
+    await signIn(email, password);
   };
+
+  // todo not it does nothing
+  if (isCheckingAuth) return null;
 
   return (
     <KeyboardAvoidingView

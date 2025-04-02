@@ -3,7 +3,6 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -14,18 +13,28 @@ import { Ionicons } from "@expo/vector-icons";
 import COLORS from "@/constants/colors";
 import { useState } from "react";
 import { useRouter } from "expo-router";
-import { signUp } from "@/services/auth";
+import { useAuth } from "@/hooks/auth/useAuth";
 
 function Signup() {
+  const { signUp, isLoading } = useAuth();
+
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
+    if (!username || !email || !password) {
+      return Alert.alert("Error", "All fields are required.");
+    } else if (username.length < 4) {
+      return Alert.alert("Error", "Username must be at least 4 characters long.");
+    } else if (password.length < 8) {
+      return Alert.alert("Error", "Password must be at least 8 characters long.");
+    } else {
+      await signUp(username, email, password);
+    }
   };
 
   return (
@@ -38,7 +47,9 @@ function Signup() {
           {/* HEADER */}
           <View style={styles.header}>
             <Text style={styles.title}>Blurbal</Text>
-            <Text style={styles.subtitle}>Share your favorite reads</Text>
+            <Text style={styles.subtitle}>
+              Share your <Text style={styles.subtitleFavorite}>favorite</Text> reads
+            </Text>
           </View>
 
           {/* FORM */}
