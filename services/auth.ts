@@ -75,14 +75,18 @@ export const createUser = async (userId: string, username: string, email: string
   }
 };
 
-export const getUser = async (userId: string) => {
+export const getUserApi = async (userId: string) => {
   try {
     const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).single();
 
-    if (error) throw error;
+    if (error) throw new Error(error.message);
 
-    return { data, error: null };
-  } catch (err: any) {
-    return { data: [], error: err.message };
+    return { user: data };
+  } catch (err) {
+    if (err instanceof Error) {
+      throw new Error(err.message);
+    } else {
+      throw new Error("An unknown error occurred during sign in.");
+    }
   }
 };
