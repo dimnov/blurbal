@@ -1,21 +1,13 @@
-import { ActivityIndicator, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import styles from "@/assets/styles/profile.styles";
 import { Image } from "expo-image";
-import { useUser } from "@/hooks/auth/useGetUser";
 import { formatMemberSince } from "@/lib/utils";
-import { useSession } from "@/hooks/auth/useSession";
+import { Profile } from "@/types";
 
-function ProfileHeader() {
-  const { session } = useSession();
-  const userId = session?.user.id;
-
-  const { data: user, loading } = useUser(userId as string);
-
-  if (loading) return <ActivityIndicator size={"large"} />;
-
+function ProfileHeader({ user }: { user: Profile }) {
   return (
     <View style={styles.profileHeader}>
-      <Image source={{ uri: user?.profileImage }} style={styles.profileImage} />
+      <Image source={{ uri: user.profileImage }} style={styles.profileImage} />
 
       <View style={styles.profileInfo}>
         <Text style={styles.username}>{user.username}</Text>

@@ -19,7 +19,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { useUploadBook } from "@/hooks/books/useUploadBook";
 import { RatingPickerProps } from "@/types";
-import { useSession } from "@/hooks/auth/useSession";
+import { useAuthContext } from "@/context/AuthContext";
 
 function Create() {
   const [title, setTitle] = useState("");
@@ -29,7 +29,7 @@ function Create() {
   const [imageBase64, setImageBase64] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { session } = useSession();
+  const { session } = useAuthContext();
   const userId = session?.user.id;
 
   // also {isLoading, error}

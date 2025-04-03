@@ -1,21 +1,22 @@
 import { useGetUserBooks } from "@/hooks/books/useGetUserBooks";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, View } from "react-native";
+import { Alert, View } from "react-native";
 import styles from "@/assets/styles/profile.styles";
 import ProfileHeader from "@/components/ProfileHeader";
 import LogoutButton from "@/components/LogoutButton";
 import { useDeleteBook } from "@/hooks/books/useDeleteBook";
 import UserBoxList from "@/components/UserBoxList";
 import Loader from "@/components/Loader";
-import { useSession } from "@/hooks/auth/useSession";
 import { sleep } from "@/lib/utils";
+import { useAuthContext } from "@/context/AuthContext";
 
 function Profile() {
   const { books, handleGetUserBooks, isLoading } = useGetUserBooks();
   const { handleDeleteBook: deleteBook } = useDeleteBook();
   const [refreshing, setRefreshing] = useState(false);
 
-  const { session } = useSession();
+  const { session, user } = useAuthContext();
+
   const userId = session?.user.id as string;
 
   useEffect(() => {
@@ -35,11 +36,11 @@ function Profile() {
     await handleGetUserBooks(userId);
   };
 
-  if (isLoading && !refreshing) return <Loader />;
+  if ((isLoading && !refreshing) || !user) return <Loader />;
 
   return (
     <View style={styles.container}>
-      <ProfileHeader />
+      <ProfileHeader user={user} />
       <LogoutButton />
 
       <UserBoxList
