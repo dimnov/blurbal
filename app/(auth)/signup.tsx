@@ -48,7 +48,7 @@ function Signup() {
           <View style={styles.header}>
             <Text style={styles.title}>Blurbal</Text>
             <Text style={styles.subtitle}>
-              Share your <Text style={styles.subtitleFavorite}>favorite</Text> reads
+              Share your <Text style={styles.headerSubtitleWord}>favorite</Text> reads
             </Text>
           </View>
 

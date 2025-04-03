@@ -1,4 +1,3 @@
-// styles/home.styles.js
 import { StyleSheet } from "react-native";
 import COLORS from "../../constants/colors";
 
@@ -31,6 +30,11 @@ const styles = StyleSheet.create({
   headerSubtitle: {
     fontSize: 14,
     color: COLORS.textSecondary,
+    textAlign: "center",
+  },
+  headerSubtitleWord: {
+    fontSize: 14,
+    color: COLORS.textFavorite,
     textAlign: "center",
   },
   bookCard: {

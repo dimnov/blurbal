@@ -1,4 +1,3 @@
-// styles/signup.styles.js
 import { StyleSheet } from "react-native";
 import COLORS from "../../constants/colors";
 
@@ -36,7 +35,7 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     textAlign: "center",
   },
-  subtitleFavorite: {
+  headerSubtitleWord: {
     fontSize: 16,
     color: COLORS.textFavorite,
     textAlign: "center",
