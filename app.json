@@ -32,12 +32,6 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ],
-      [
-        "expo-font",
-        {
-          "fonts": ["./assets/fonts/JetBrainsMono-Medium.ttf"]
-        }
       ]
     ],
     "experiments": {
