@@ -32,7 +32,6 @@ function Login() {
     await signIn(email, password);
   };
 
-  // todo not it does nothing
   if (isCheckingAuth) return null;
 
   return (
