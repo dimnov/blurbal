@@ -8,9 +8,9 @@ import { Ionicons } from "@expo/vector-icons";
 import COLORS from "@/constants/colors";
 import { formatPublishDate, sleep } from "@/lib/utils";
 import Loader from "@/components/Loader";
+import StarRating from "@/components/StarRating";
 
 function Home() {
-  // also {error}
   const { books, handleGetBooks, isLoading } = useGetBooks();
   const [refreshing, setRefreshing] = useState(false);
 
@@ -29,9 +29,9 @@ function Home() {
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
-            style={{ padding: 12 }}
             refreshing={refreshing}
             onRefresh={async () => {
+              setRefreshing(true);
               await sleep(500);
               handleGetBooks();
             }}
@@ -44,7 +44,9 @@ function Home() {
         ListHeaderComponent={
           <View style={styles.header}>
             <Text style={styles.headerTitle}>Blurbal</Text>
-            <Text style={styles.headerSubtitle}>Discover great reads from the community</Text>
+            <Text style={styles.headerSubtitle}>
+              Discover <Text style={styles.headerSubtitleWord}>great</Text> reads from the community
+            </Text>
           </View>
         }
         // ListFooterComponent={
@@ -82,25 +84,10 @@ function BookPostCard({ book }: { book: ItemData }) {
 
       <View style={styles.bookDetails}>
         <Text style={styles.bookTitle}>{book.title}</Text>
-        <RatingStars rating={book.rating} />
+        <StarRating rating={book.rating} />
         <Text style={styles.caption}>{book.caption}</Text>
         <Text style={styles.date}>Shared on {formatPublishDate(book.created_at)}</Text>
       </View>
-    </View>
-  );
-}
-
-function RatingStars({ rating, n = 5 }: { rating: number; n?: number }) {
-  return (
-    <View style={styles.ratingContainer}>
-      {Array.from({ length: n }, (_, i) => i + 1).map((i) => (
-        <Ionicons
-          name={i <= rating ? "star" : "star-outline"}
-          key={i}
-          size={16}
-          color={i <= rating ? "#f4b400" : COLORS.textSecondary}
-        />
-      ))}
     </View>
   );
 }

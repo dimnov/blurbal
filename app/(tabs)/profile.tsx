@@ -5,10 +5,10 @@ import styles from "@/assets/styles/profile.styles";
 import ProfileHeader from "@/components/ProfileHeader";
 import LogoutButton from "@/components/LogoutButton";
 import { useDeleteBook } from "@/hooks/books/useDeleteBook";
-import UserBoxList from "@/components/UserBoxList";
 import Loader from "@/components/Loader";
 import { sleep } from "@/lib/utils";
 import { useAuthContext } from "@/context/AuthContext";
+import UserBooksList from "@/components/UserBooksList";
 
 function Profile() {
   const { books, handleGetUserBooks, isLoading } = useGetUserBooks();
@@ -43,7 +43,7 @@ function Profile() {
       <ProfileHeader user={user} />
       <LogoutButton />
 
-      <UserBoxList
+      <UserBooksList
         books={books}
         onDeleteBook={handleDeleteBook}
         refreshing={refreshing}
