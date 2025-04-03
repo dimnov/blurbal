@@ -35,6 +35,9 @@ export const useAuth = () => {
   };
 
   const signOut = async () => {
+    setIsLoading(true);
+    setError(null);
+
     try {
       await signOutApi();
     } catch (err) {
