@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -15,96 +15,66 @@ import {
 import styles from "@/assets/styles/create.styles";
 import { Ionicons } from "@expo/vector-icons";
 import COLORS from "@/constants/colors";
-import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from "expo-file-system";
-import { useUploadBook } from "@/hooks/books/useUploadBook";
-import { RatingPickerProps } from "@/types";
+import { Book, RatingPickerProps } from "@/types";
 import { useAuthContext } from "@/context/AuthContext";
+import { useImagePicker } from "@/hooks/books/useImagePicker";
+import { useBooks } from "@/hooks/books/useBooks";
+
+const initialStateBook = {
+  title: "",
+  caption: "",
+  rating: 3,
+  image: "",
+  imageBase64: "",
+};
 
 function Create() {
-  const [title, setTitle] = useState("");
-  const [caption, setCaption] = useState("");
-  const [rating, setRating] = useState(3);
-  const [image, setImage] = useState("");
-  const [imageBase64, setImageBase64] = useState("");
+  const [book, setBook] = useState<Book>(initialStateBook);
   const [loading, setLoading] = useState(false);
 
-  const { session } = useAuthContext();
-  const userId = session?.user.id;
-
-  // also {isLoading, error}
-  const { handleUploadBook } = useUploadBook();
+  const { userId } = useAuthContext();
+  const { createBook } = useBooks();
 
   const router = useRouter();
 
-  const pickImage = async () => {
-    try {
-      if (Platform.OS !== "web") {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-        if (status !== "granted") {
-          Alert.alert("Permission Denied", "We need camera roll permissions to upload an image");
-          return;
-        }
-      }
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: "images",
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 0.5,
-        base64: true,
-      });
-
-      if (!result.canceled) {
-        setImage(result.assets[0].uri);
-
-        if (result.assets[0].base64) {
-          setImageBase64(result.assets[0].base64);
-        } else {
-          const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, {
-            encoding: FileSystem.EncodingType.Base64,
-          });
-          setImageBase64(base64);
-        }
-      }
-    } catch (error: any) {
-      console.error(error);
-      Alert.alert("Error", "There was a problem selecting your image");
-    }
-  };
+  const { image, imageBase64, pickImage } = useImagePicker();
+  const bookInputsEmpty = !book.title || !book.caption || !book.imageBase64;
 
   const handleSubmit = async () => {
-    if (!title || !caption || !imageBase64 || !rating) {
+    if (bookInputsEmpty) {
       Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+
+    if (!userId) {
+      Alert.alert("Error", "User not found. Please log in again.");
       return;
     }
 
     try {
       setLoading(true);
-      const bookData = {
-        title,
-        caption,
-        rating,
-        userId,
-      };
-
-      if (userId) {
-        await handleUploadBook(bookData, imageBase64);
-        setTitle("");
-        setCaption("");
-        setRating(3);
-        setImage("");
-        setImageBase64("");
-
-        router.push("/");
-      }
+      await createBook(
+        {
+          title: book.title,
+          caption: book.caption,
+          rating: book.rating,
+          userId: userId,
+        },
+        book.imageBase64
+      );
+      router.push("/");
+      Alert.alert("Success", "Your book recommendation has been posted!");
     } catch (error: any) {
       Alert.alert("Error!", error.message);
     } finally {
+      setBook(initialStateBook);
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    setBook((prevBook) => ({ ...prevBook, image: image || "", imageBase64: imageBase64 || "" }));
+  }, [image, imageBase64]);
 
   return (
     <KeyboardAvoidingView
@@ -133,8 +103,8 @@ function Create() {
                   style={styles.input}
                   placeholder="Enter book title"
                   placeholderTextColor={COLORS.placeholderText}
-                  value={title}
-                  onChangeText={setTitle}
+                  value={book.title}
+                  onChangeText={(title) => setBook((prevBook) => ({ ...prevBook, title }))}
                 />
               </View>
             </View>
@@ -142,15 +112,18 @@ function Create() {
             {/* RATING */}
             <View style={styles.formGroup}>
               <Text style={styles.label}>Your Rating</Text>
-              <RatingPickerContainer rating={rating} setRating={setRating} />
+              <RatingPickerContainer
+                rating={book.rating}
+                setRating={(rating) => setBook((prevBook) => ({ ...prevBook, rating }))}
+              />
             </View>
 
             {/* IMAGE */}
             <View style={styles.formGroup}>
               <Text style={styles.label}>Book Image</Text>
               <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
-                {image ? (
-                  <Image source={{ uri: image }} style={styles.previewImage} />
+                {book.image ? (
+                  <Image source={{ uri: book.image }} style={styles.previewImage} />
                 ) : (
                   <View style={styles.placeholderContainer}>
                     <Ionicons name="image-outline" size={40} color={COLORS.textSecondary} />
@@ -167,13 +140,17 @@ function Create() {
                 style={styles.textArea}
                 placeholder="Write your review or thoughts about this book..."
                 placeholderTextColor={COLORS.placeholderText}
-                value={caption}
-                onChangeText={setCaption}
+                value={book.caption}
+                onChangeText={(caption) => setBook((prevBook) => ({ ...prevBook, caption }))}
                 multiline
               />
             </View>
 
-            <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={loading}>
+            <TouchableOpacity
+              style={[styles.button, bookInputsEmpty && styles.disabledButton]}
+              onPress={handleSubmit}
+              disabled={loading || bookInputsEmpty}
+            >
               {loading ? (
                 <ActivityIndicator color={COLORS.white} />
               ) : (
@@ -198,9 +175,11 @@ function Create() {
 export default Create;
 
 function RatingPickerContainer({ rating, setRating, n = 5 }: RatingPickerProps) {
+  const stars = [...Array(n)].map((_, i) => i + 1);
+
   return (
     <View style={styles.ratingContainer}>
-      {Array.from({ length: n }, (_, i) => i + 1).map((i) => (
+      {stars.map((i) => (
         <TouchableOpacity key={i} onPress={() => setRating(i)} style={styles.starButton}>
           <Ionicons
             name={i <= rating ? "star" : "star-outline"}
