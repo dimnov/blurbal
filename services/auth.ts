@@ -58,14 +58,13 @@ export const signOutApi = async () => {
   }
 };
 
-export const createUser = async (userId: string, username: string, email: string) => {
+export const getUserApi = async (userId: string) => {
   try {
-    const profileImage = `${AVATAR_URL}${username}`;
-    const { error } = await supabase
-      .from("profiles")
-      .insert({ id: userId, username, profileImage, email });
+    const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).single();
 
     if (error) throw new Error(error.message);
+
+    return { user: data };
   } catch (err) {
     if (err instanceof Error) {
       throw new Error(err.message);
@@ -75,13 +74,14 @@ export const createUser = async (userId: string, username: string, email: string
   }
 };
 
-export const getUserApi = async (userId: string) => {
+export const createUser = async (userId: string, username: string, email: string) => {
   try {
-    const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).single();
+    const profileImage = `${AVATAR_URL}${username}`;
+    const { error } = await supabase
+      .from("profiles")
+      .insert({ id: userId, username, profileImage, email });
 
     if (error) throw new Error(error.message);
-
-    return { user: data };
   } catch (err) {
     if (err instanceof Error) {
       throw new Error(err.message);
