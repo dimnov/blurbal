@@ -7,6 +7,7 @@ import { createContext, ReactNode, useContext, useEffect, useState } from "react
 type AuthContextType = {
   session: Session | null;
   user: Profile | null;
+  userId: string;
   isCheckingAuth: boolean;
 };
 
@@ -15,6 +16,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { session, isCheckingAuth } = useSession();
   const [user, setUser] = useState<Profile | null>(null);
+  const userId = user?.id as string;
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -32,7 +34,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [session]);
 
   return (
-    <AuthContext.Provider value={{ session, isCheckingAuth, user }}>
+    <AuthContext.Provider value={{ session, isCheckingAuth, user, userId }}>
       {children}
     </AuthContext.Provider>
   );
