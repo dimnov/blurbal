@@ -1,39 +1,56 @@
-import { useGetUserBooks } from "@/hooks/books/useGetUserBooks";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Alert, View } from "react-native";
 import styles from "@/assets/styles/profile.styles";
 import ProfileHeader from "@/components/ProfileHeader";
 import LogoutButton from "@/components/LogoutButton";
-import { useDeleteBook } from "@/hooks/books/useDeleteBook";
 import Loader from "@/components/Loader";
 import { sleep } from "@/lib/utils";
 import { useAuthContext } from "@/context/AuthContext";
 import UserBooksList from "@/components/UserBooksList";
+import { useBooks } from "@/hooks/books/useBooks";
+import { ProfileBoxProps } from "@/types";
 
 function Profile() {
-  const { books, handleGetUserBooks, isLoading } = useGetUserBooks();
-  const { handleDeleteBook: deleteBook } = useDeleteBook();
+  const [books, setBooks] = useState<ProfileBoxProps[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const { session, user } = useAuthContext();
+  const { getUserBooks, deleteBook, isLoading } = useBooks();
+  const { user, userId } = useAuthContext();
 
-  const userId = session?.user.id as string;
+  const fetchBooks = useCallback(async () => {
+    const fetchedBooks = await getUserBooks(userId);
+    setBooks(fetchedBooks);
+  }, [getUserBooks, userId]);
 
   useEffect(() => {
-    handleGetUserBooks(userId);
-  }, [handleGetUserBooks, userId]);
+    fetchBooks();
+  }, [fetchBooks]);
+
+  const handleRefresh = async () => {
+    try {
+      setRefreshing(true);
+      await sleep(500);
+      await fetchBooks();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const handleDeleteBook = (bookId: string) => {
     Alert.alert("Delete Recommendation", "Are you sure you want to delete this recommendation?", [
       { text: "Cancel", style: "cancel" },
-      { text: "Delete", style: "destructive", onPress: () => deleteBook(bookId, userId) },
-    ]);
-  };
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => {
+          deleteBook(bookId, userId);
 
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await sleep(500);
-    await handleGetUserBooks(userId);
+          setBooks((prevBooks) => prevBooks.filter((book) => book.id !== bookId));
+        },
+      },
+    ]);
   };
 
   if ((isLoading && !refreshing) || !user) return <Loader />;
