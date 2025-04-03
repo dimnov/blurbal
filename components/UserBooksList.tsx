@@ -4,10 +4,10 @@ import { formatPublishDate } from "@/lib/utils";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { useState } from "react";
 import { FlatList, RefreshControl, Text, TouchableOpacity, View } from "react-native";
+import StarRating from "./StarRating";
 
-function UserBoxList({ books, onDeleteBook, handleRefresh, refreshing }: any) {
+function UserBooksList({ books, onDeleteBook, handleRefresh, refreshing }: any) {
   return (
     <>
       <View style={styles.booksHeader}>
@@ -17,7 +17,7 @@ function UserBoxList({ books, onDeleteBook, handleRefresh, refreshing }: any) {
 
       <FlatList
         data={books}
-        renderItem={({ item }) => <BookItem book={item} onDeleteBook={onDeleteBook} />}
+        renderItem={({ item }) => <BookBox book={item} onDeleteBook={onDeleteBook} />}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.booksList}
@@ -35,16 +35,16 @@ function UserBoxList({ books, onDeleteBook, handleRefresh, refreshing }: any) {
   );
 }
 
-export default UserBoxList;
+export default UserBooksList;
 
-function BookItem({ book, onDeleteBook }: any) {
+function BookBox({ book, onDeleteBook }: any) {
   return (
     <View style={styles.bookItem}>
       <Image source={book.image_url} style={styles.bookImage} />
 
       <View style={styles.bookInfo}>
         <Text style={styles.bookTitle}>{book.title}</Text>
-        <RatingStars rating={book.rating} />
+        <StarRating rating={book.rating} />
         <Text style={styles.bookCaption} numberOfLines={2}>
           {book.caption}
         </Text>
@@ -68,21 +68,6 @@ function EmptyBooksList() {
       <TouchableOpacity style={styles.addButton} onPress={() => router.push("/create")}>
         <Text style={styles.addButtonText}>Add Your First Book</Text>
       </TouchableOpacity>
-    </View>
-  );
-}
-
-function RatingStars({ rating, n = 5 }: { rating: number; n?: number }) {
-  return (
-    <View style={styles.ratingContainer}>
-      {Array.from({ length: n }, (_, i) => i + 1).map((i) => (
-        <Ionicons
-          name={i <= rating ? "star" : "star-outline"}
-          key={i}
-          size={16}
-          color={i <= rating ? "#f4b400" : COLORS.textSecondary}
-        />
-      ))}
     </View>
   );
 }
