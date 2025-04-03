@@ -4,41 +4,49 @@ import { supabase } from "@/lib/supabase";
 import { BookData } from "@/types";
 import { decode } from "base64-arraybuffer";
 
-export const uploadBook = async (bookData: BookData, imageBase64: string) => {
+export const uploadBookApi = async (bookData: BookData, imageBase64: string) => {
   try {
     if (!imageBase64) throw new Error("No file selected");
 
     const fileName = `books/${Date.now()}.png`;
     const contentType = "image/png";
 
-    // Upload to Supabase Storage
     const { error } = await supabase.storage
       .from("book-images")
       .upload(fileName, decode(imageBase64), {
         contentType,
       });
-    if (error) throw error;
+
+    if (error) throw new Error(error.message);
+
     const { data: publicUrlData } = supabase.storage.from("book-images").getPublicUrl(fileName);
     const imageUrl = publicUrlData.publicUrl;
 
-    // Insert into "books" table
     const { error: insertError } = await supabase
       .from("books")
       .insert([{ ...bookData, image_url: imageUrl }]);
 
-    if (insertError) throw insertError;
-
-    return { imageUrl, error: null };
-  } catch (err: any) {
-    return { imageUrl: null, error: err.message };
+    if (insertError) throw new Error(insertError.message);
+  } catch (err) {
+    if (err instanceof Error) {
+      throw new Error(err.message);
+    } else {
+      throw new Error("An unknown error occurred during sign up.");
+    }
   }
 };
 
-export const updateBook = async () => {};
-
-export const deleteBook = async () => {};
-
-export const getBook = async () => {};
+export const deleteBookApi = async (bookId: string, userId: string) => {
+  try {
+    await supabase.from("books").delete().eq("id", bookId).eq("userId", userId);
+  } catch (err) {
+    if (err instanceof Error) {
+      throw new Error(err.message);
+    } else {
+      throw new Error("An unknown error occurred during sign up.");
+    }
+  }
+};
 
 // pagination
 export const getAllBooks = async () => {
@@ -53,5 +61,21 @@ export const getAllBooks = async () => {
     return { data, error: null };
   } catch (err: any) {
     return { data: [], error: err.message };
+  }
+};
+
+export const getUserBooksApi = async (userId: string) => {
+  try {
+    const { data, error } = await supabase.from("books").select("*").eq("userId", userId);
+
+    if (error) throw new Error(error.message);
+
+    return { data };
+  } catch (err) {
+    if (err instanceof Error) {
+      throw new Error(err.message);
+    } else {
+      throw new Error("An unknown error occurred getting user books.");
+    }
   }
 };
