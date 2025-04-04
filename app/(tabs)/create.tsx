@@ -64,8 +64,12 @@ function Create() {
       );
       router.push("/");
       Alert.alert("Success", "Your book recommendation has been posted!");
-    } catch (error: any) {
-      Alert.alert("Error!", error.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        Alert.alert("Error", err.message);
+      } else {
+        Alert.alert("Error", "There was a problem posting recommendation");
+      }
     } finally {
       setBook(initialStateBook);
       setLoading(false);

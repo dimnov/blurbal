@@ -21,8 +21,12 @@ export const useSession = () => {
       return () => {
         authListener.subscription.unsubscribe();
       };
-    } catch (error: any) {
-      throw new Error(error);
+    } catch (err) {
+      if (err instanceof Error) {
+        throw new Error(err.message);
+      } else {
+        throw new Error("There was an unexpected error");
+      }
     } finally {
       setIsCheckingAuth(false);
     }
