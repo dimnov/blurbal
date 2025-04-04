@@ -1,5 +1,10 @@
-# Blurbal 📚  
- 
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/43c39b58-a28f-4e80-a795-6e55181a55c0" alt="icon"/>
+</p>
+
+#
+
 A React Native app built with Expo that allows users to share and browse book reviews. The app features authentication and a database powered by Supabase.  
  
 ## ✨ Features  
@@ -7,7 +12,7 @@ A React Native app built with Expo that allows users to share and browse book re
 - **Home Feed**: Infinite scrolling feed of user-submitted book reviews.  
 - **Add Review**: Users can post reviews with a book title, image, rating, and caption.  
 - **Profile**: Displays the user’s name and their posted reviews.  
- 
+
 ## 🛠️ Tech Stack  
 - **React Native** (Expo)  
 - **Supabase** (Auth & Database)  
