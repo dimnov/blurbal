@@ -6,8 +6,21 @@ import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { FlatList, RefreshControl, Text, TouchableOpacity, View } from "react-native";
 import StarRating from "./StarRating";
+import { ProfileBoxProps } from "@/types";
 
-function UserBooksList({ books, onDeleteBook, handleRefresh, refreshing }: any) {
+type UserBooksListProps = {
+  books: ProfileBoxProps[] | [];
+  onDeleteBook: (bookId: string) => void;
+  handleRefresh: () => void;
+  refreshing: boolean;
+};
+
+type BookBoxProps = {
+  book: ProfileBoxProps;
+  onDeleteBook: (bookId: string) => void;
+};
+
+function UserBooksList({ books, onDeleteBook, handleRefresh, refreshing }: UserBooksListProps) {
   return (
     <>
       <View style={styles.booksHeader}>
@@ -37,7 +50,7 @@ function UserBooksList({ books, onDeleteBook, handleRefresh, refreshing }: any) 
 
 export default UserBooksList;
 
-function BookBox({ book, onDeleteBook }: any) {
+function BookBox({ book, onDeleteBook }: BookBoxProps) {
   return (
     <View style={styles.bookItem}>
       <Image source={book.image_url} style={styles.bookImage} />
